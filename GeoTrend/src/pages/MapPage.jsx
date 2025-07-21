@@ -14,6 +14,7 @@ const MapPage = () => {
   const [cityTrendData, setCityTrendData] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [savedTrends, setSavedTrends] = useState(new Set());
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     async function getCityTrends() {
@@ -485,11 +486,16 @@ const MapPage = () => {
         <input
           type="text"
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+            setShowDropdown(e.target.value.length > 0);
+          }}
+          onFocus={() => setShowDropdown(searchValue.length > 0)}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           className="block mx-auto text-center w-[80%] h-[4%] rounded-md border-2 border-solid border-blue-100 bg-blue-100 text-blue-800 font-semibold focus:outline-none focus:ring-1 focus:ring-blue-400"
           placeholder="⌕ Search for cities..."
         />
-        {searchValue && (
+        {showDropdown && searchValue && (
           <ul className="absolute left-1/2 transform -translate-x-1/2 w-[80%] bg-white border border-blue-100 rounded-md shadow z-10 mt-1 max-h-48 overflow-y-auto">
             {cityNames
               .filter((name) =>
@@ -500,9 +506,12 @@ const MapPage = () => {
                   key={name}
                   className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
                   onClick={() => {
-                    setSearchValue(name);
                     const city = majorCities.find((c) => c.name === name);
-                    if (city) setSelectedCity(city.subreddit);
+                    if (city) {
+                      setSelectedCity(city.subreddit);
+                      setSearchValue("");
+                      setShowDropdown(false);
+                    }
                   }}
                 >
                   {name}
