@@ -41,7 +41,8 @@ export const AuthProvider = ({ children }) => {
       email,
       password,
       options: {
-        data: metadata
+        data: metadata,
+        emailRedirectTo: 'https://geo-trend.vercel.app/login'
       }
     });
     return { data, error };
